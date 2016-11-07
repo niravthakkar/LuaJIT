@@ -246,9 +246,9 @@ local map_cond = {
 
 local parse_reg_type
 
-local function parse_reg(expr)
-  if not expr then werror("expected register name") end
-  local tname, ovreg = match(expr, "^([%w_]+):(@?%l%d+)$")
+
+local function parse_gpr(expr)
+  local tname, ovreg = match(expr, "^([%w_]+):(r[1-3]?[0-9])$")
   local tp = map_type[tname or expr]
   if tp then
     local reg = ovreg or tp.reg
@@ -257,20 +257,26 @@ local function parse_reg(expr)
     end
     expr = reg
   end
-  local ok31, rt, r = match(expr, "^(@?)([xwqdshb])([123]?[0-9])$")
+  local r = match(expr, "^r([1-3]?[0-9])$")
   if r then
     r = tonumber(r)
-    if r <= 30 or (r == 31 and ok31 ~= "" or (rt ~= "w" and rt ~= "x")) then
-      if not parse_reg_type then
-	parse_reg_type = rt
-      elseif parse_reg_type ~= rt then
-	werror("register size mismatch")
-      end
-      return r, tp
-    end
+    if r <= 31 then return r, tp end
   end
   werror("bad register name `"..expr.."'")
 end
+
+local function parse_fpr(expr)
+  local r = match(expr, "^f([1-3]?[0-9])$")
+  if r then
+    r = tonumber(r)
+    if r <= 31 then return r end
+  end
+  werror("bad register name `"..expr.."'")
+end
+
+
+
+
 
 local function parse_reg_base(expr)
   if expr == "sp" then return 0x3e0 end
