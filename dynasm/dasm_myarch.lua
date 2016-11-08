@@ -214,13 +214,15 @@ end
 ------------------------------------------------------------------------------
 
 -- Arch-specific maps.
-
+-- TODO: add s390x related register names
 -- Ext. register name -> int. name.
-local map_archdef = { xzr = "@x31", wzr = "@w31", lr = "x30", }
+--local map_archdef = { xzr = "@x31", wzr = "@w31", lr = "x30", }
+local map_archdef = {}
 
 -- Int. register name -> ext. name.
-local map_reg_rev = { ["@x31"] = "xzr", ["@w31"] = "wzr", x30 = "lr", }
-
+-- local map_reg_rev = { ["@x31"] = "xzr", ["@w31"] = "wzr", x30 = "lr", }
+local map_reg_rev = {}
+	
 local map_type = {}		-- Type name -> { ctype, reg }
 local ctypenum = 0		-- Type number (for Dt... macros).
 
@@ -228,7 +230,7 @@ local ctypenum = 0		-- Type number (for Dt... macros).
 function _M.revdef(s)
   return map_reg_rev[s] or s
 end
-
+-- not sure of these
 local map_shift = { lsl = 0, lsr = 1, asr = 2, }
 
 local map_extend = {
