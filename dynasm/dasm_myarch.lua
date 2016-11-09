@@ -967,15 +967,16 @@ end
 
 -- Handle opcodes defined with template strings.
 local function parse_template(params, template, nparams, pos)
-  local op = tonumber(sub(template, 1, 16), 16)
-  local n = 1
-  local rtt = {}
-
+  local op = tonumber(sub(template, 1, 12), 16)  -- 13-16 ignored since those are trailing zeros added after the instruction
+						 -- 00000000005a0000  converts to 90
+  local n,rs = 1,26
+  
   parse_reg_type = false
 
-  -- Process each character.
-  for p in gmatch(sub(template, 16), ".") do
-    if p == "D" then
+  -- Process each character. (if its RX-a==> 1st iteration gets R, 2nd==X and so on)
+  for p in gmatch(sub(template, 17), ".") do
+  local q = params[n]
+    if p == "R" then
       op = op + parse_reg(q); n = n + 1
     elseif p == "N" then
       op = op + shl(parse_reg(q), 5); n = n + 1
